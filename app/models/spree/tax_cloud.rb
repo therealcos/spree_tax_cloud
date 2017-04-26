@@ -9,8 +9,8 @@ module Spree
       end
     end
 
-    def self.transaction_from_shipment(shipment)
-      stock_location = shipment.try(:stock_location)
+    def self.transaction_from_item(item)
+      stock_location = item.try(:stock_location) || item.try(:inventory_unit).try(:shipment).try(:stock_location)
       raise Spree.t(:ensure_one_valid_stock_location) unless stock_location
 
       order = shipment.order

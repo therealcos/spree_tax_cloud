@@ -5,7 +5,7 @@ Spree::Order.class_eval do
     return unless is_taxed_using_tax_cloud?
 
     self.shipments.each do |shipment|
-      response =  Spree::TaxCloud.transaction_from_shipment(shipment).authorized_with_capture
+      response = Spree::TaxCloud.transaction_from_item(shipment).authorized_with_capture
       if response != "OK"
         Rails.logger.error "ERROR: TaxCloud returned an order capture response of #{response}."
       end
