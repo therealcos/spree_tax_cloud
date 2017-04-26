@@ -9,9 +9,11 @@ module Spree
       end
     end
 
-    def self.transaction_from_order(order)
-      stock_location = order.shipments.first.try(:stock_location) || Spree::StockLocation.active.where("city IS NOT NULL and state_id IS NOT NULL").first
+    def self.transaction_from_shipment(shipment)
+      stock_location = shipment.try(:stock_location)
       raise Spree.t(:ensure_one_valid_stock_location) unless stock_location
+
+      order = shipment.order
 
       transaction = ::TaxCloud::Transaction.new(
         customer_id: order.user_id || order.email,
