@@ -10,7 +10,7 @@ module Spree
     end
 
     def self.transaction_from_item(item)
-      stock_location = item.try(:stock_location) || item.try(:variant).try(:stock_locations).select{|sl| sl.supplier_id == item.variant.suppliers.first.id}.try(:first)
+      stock_location = item.try(:stock_location) || item.try(:variant).try(:stock_locations).select{|sl| sl.supplier_id == item.variant.suppliers.first.id}.first
       raise Spree.t(:ensure_one_valid_stock_location) unless stock_location
 
       order = item.order
