@@ -62,13 +62,12 @@ module Spree
         # possibly by overriding the TaxCloud::Responses::Lookup model
         # or the CartItems model.
         index = -1 # array is zero-indexed
+        amount = item.variant.product.taxable ? lookup_cart_items[index += 1].tax_amount : 0
         # Retrieve line_items from lookup
         order.line_items.each do |line_item|
-          amount = item.variant.product.taxable ? lookup_cart_items[index += 1].tax_amount : 0
           Rails.cache.write(["TaxCloudRatesForItem", line_item.tax_cloud_cache_key], amount, time_to_idle: 5.minutes)
         end
         order.shipments.each do |shipment|
-          amount = item.variant.product.taxable ? lookup_cart_items[index += 1].tax_amount : 0
           Rails.cache.write(["TaxCloudRatesForItem", shipment.tax_cloud_cache_key], amount, time_to_idle: 5.minutes)
         end
 
