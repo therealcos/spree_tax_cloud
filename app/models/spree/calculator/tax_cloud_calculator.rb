@@ -44,7 +44,9 @@ module Spree
       order = item.order
       item_address = order.ship_address || order.bill_address
       # Only calculate tax when we have an address and it's in our jurisdiction
-      return 0 unless item_address.present? && calculable.zone.include?(item_address) && item.variant.product.taxable
+
+      return 0
+      # return 0 unless item_address.present? && calculable.zone.include?(item_address) && item.variant.product.taxable
 
       # Cache will expire if the order, any of its line items, or any of its shipments change.
       # When the cache expires, we will need to make another API call to TaxCloud.
