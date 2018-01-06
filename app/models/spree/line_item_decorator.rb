@@ -7,4 +7,16 @@ Spree::LineItem.class_eval do
       key << "billed_to<#{order.bill_address.try(:cache_key)}>"
     end
   end
+
+  def promo_amount
+    promo = order.promotion
+    return promo_total unless promo
+    order_total = order.item_total
+    return 0.0 unless order_total != 0.0
+    (promo.amount * amount) / order_total
+  end
+
+  def discounted_amount
+    amount + promo_amount
+  end
 end
