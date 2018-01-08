@@ -14,11 +14,15 @@ Spree::LineItem.class_eval do
     puts "ADJUSTMENTS IS #{order.adjustments}"
     puts "COMPETING PROMOS IS #{order.adjustments.competing_promos}"
     puts "PROMO IS #{promo}"
+    puts "PROMO TOTAL IS #{promo_total}"
     return promo_total unless promo
     order_total = order.item_total
     puts "ORDER TOTAL IS #{order_total}"
-    return 0.0 unless order_total != 0.0
-    (promo.amount * amount) / order_total
-    puts "PROMO AMOUNT IS #{(promo.amount * amount) / order_total}"
+    if order_total == 0.0
+    	0.0
+    else
+    	puts "PROMO AMOUNT IS #{(promo.amount * amount) / order_total}"
+    	return ((promo.amount * amount) / order_total)
+    end
   end
 end
