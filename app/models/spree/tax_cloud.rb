@@ -44,6 +44,8 @@ module Spree
     end
 
     def self.cart_item_from_item(item, index)
+      puts "item quantity is #{item.quantity}"
+      puts "price is #{(item.promo_amount / item.quantity) + item.price}"
       case item
       when Spree::LineItem
         ::TaxCloud::CartItem.new(
