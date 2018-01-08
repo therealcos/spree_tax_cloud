@@ -68,12 +68,12 @@ module Spree
         # Retrieve line_items from lookup
         line_item_amount = difference < 0 ? tax_amount + (difference / order.line_items.length) : tax_amount
         order.line_items.each do |line_item|
-          Rails.cache.write(["TaxCloudRatesForItem", line_item.tax_cloud_cache_key], line_item_amount, time_to_idle: 5.minutes)
+          Rails.cache.write(["TaxCloudRatesForItem", line_item.tax_cloud_cache_key], [0, line_item_amount].max, time_to_idle: 5.minutes)
         end
 
         shipment_amount = difference < 0 ? tax_amount + (difference / order.shipments.length) : tax_amount
         order.shipments.each do |shipment|
-          Rails.cache.write(["TaxCloudRatesForItem", shipment.tax_cloud_cache_key], shipment_amount, time_to_idle: 5.minutes)
+          Rails.cache.write(["TaxCloudRatesForItem", shipment.tax_cloud_cache_key], [0, shipment_amount].max, time_to_idle: 5.minutes)
         end
 
         # Lastly, return the particular rate that we were initially looking for
