@@ -10,6 +10,9 @@ Spree::LineItem.class_eval do
 
   def promo_amount
     promo = order.adjustments.competing_promos.eligible.reorder("amount ASC, created_at DESC, id DESC").first
+    puts "ORDER IS #{order}"
+    puts "ADJUSTMENTS IS #{order.adjustments.to_a}"
+    puts "COMPETING PROMOS IS #{order.adjustments.competing_promos.to_a}"
     puts "PROMO IS #{promo}"
     return promo_total unless promo
     order_total = order.item_total
