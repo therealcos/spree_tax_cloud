@@ -65,6 +65,8 @@ module Spree
         tax_amount = item.variant.product.taxable ? lookup_cart_items[index += 1].tax_amount : 0
         difference = order.adjustment_total + order.line_items.map(&:final_amount).sum + order.promo_total
         
+        puts "DIFFERENCE is #{difference}"
+
         # Retrieve line_items from lookup
         line_item_amount = difference < 0 ? tax_amount + (difference / order.line_items.length) : tax_amount
         order.line_items.each do |line_item|
