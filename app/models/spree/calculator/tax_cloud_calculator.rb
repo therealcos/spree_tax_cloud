@@ -46,10 +46,6 @@ module Spree
       # Only calculate tax when we have an address and it's in our jurisdiction
       return 0 unless item_address.present? && calculable.zone.include?(item_address)
 
-      difference = order.adjustment_total + order.line_items.map(&:final_amount).sum + order.promo_total
-        
-      puts "DIFFERENCE is #{difference}"
-
       # Cache will expire if the order, any of its line items, or any of its shipments change.
       # When the cache expires, we will need to make another API call to TaxCloud.
       Rails.cache.fetch(["TaxCloudRatesForItem", item.tax_cloud_cache_key], time_to_idle: 5.minutes) do
@@ -66,17 +62,12 @@ module Spree
         # possibly by overriding the TaxCloud::Responses::Lookup model
         # or the CartItems model.
         index = -1 # array is zero-indexed
-        tax_amount = item.variant.product.taxable ? lookup_cart_items[index += 1].tax_amount : 0
-
         # Retrieve line_items from lookup
-        line_item_amount = difference < 0 ? tax_amount + (difference / order.line_items.length) : tax_amount
         order.line_items.each do |line_item|
-          Rails.cache.write(["TaxCloudRatesForItem", line_item.tax_cloud_cache_key], [0, line_item_amount].max, time_to_idle: 5.minutes)
+          Rails.cache.write(["TaxCloudRatesForItem", line_item.tax_cloud_cache_key], item.variant.product.taxable ? lookup_cart_items[index += 1].tax_amount : 0, time_to_idle: 5.minutes)
         end
-
-        shipment_amount = difference < 0 ? tax_amount + (difference / order.shipments.length) : tax_amount
         order.shipments.each do |shipment|
-          Rails.cache.write(["TaxCloudRatesForItem", shipment.tax_cloud_cache_key], [0, shipment_amount].max, time_to_idle: 5.minutes)
+          Rails.cache.write(["TaxCloudRatesForItem", shipment.tax_cloud_cache_key], item.variant.product.taxable ? lookup_cart_items[index += 1].tax_amount : 0, time_to_idle: 5.minutes)
         end
 
         # Lastly, return the particular rate that we were initially looking for

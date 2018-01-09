@@ -46,11 +46,13 @@ module Spree
     def self.cart_item_from_item(item, index)
       case item
       when Spree::LineItem
+        order_promo = item.order.adjustments.competing_promos.eligible.reorder("amount ASC, created_at DESC, id DESC").first
+        order_promo_amount = order_promo ? (order_promo.amount / order.quantity) : 0
         ::TaxCloud::CartItem.new(
           index:    index,
           item_id:  item.try(:variant).try(:sku).present? ? item.try(:variant).try(:sku) : "LineItem #{item.id}",
           tic:      (item.product.tax_cloud_tic || Spree::Config.taxcloud_default_product_tic),
-          price:    item.quantity == 0 ? item.price : (item.promo_total / item.quantity) + item.price,
+          price:    item.quantity == 0 ? item.price : (item.promo_total / item.quantity) + order_promo_amount + item.price,
           quantity: item.quantity
         )
       when Spree::Shipment
