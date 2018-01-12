@@ -47,7 +47,7 @@ module Spree
       case item
       when Spree::LineItem
         order_promo = item.order.adjustments.competing_promos.eligible.reorder("amount ASC, created_at DESC, id DESC").first
-        order_promo_amount = order_promo ? (order_promo.amount / order.quantity) : 0
+        order_promo_amount = order_promo ? (order_promo.amount / item.order.quantity) : 0
         ::TaxCloud::CartItem.new(
           index:    index,
           item_id:  item.try(:variant).try(:sku).present? ? item.try(:variant).try(:sku) : "LineItem #{item.id}",
