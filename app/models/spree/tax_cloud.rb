@@ -49,6 +49,7 @@ module Spree
         order_promo = item.order.adjustments.competing_promos.eligible.reorder("amount ASC, created_at DESC, id DESC").first
         order_promo_amount = order_promo ? (order_promo.amount / item.order.quantity) : 0
         puts "order_promo.amount is #{order_promo.amount}" if order_promo
+        puts "item.order.quantity is #{item.order.quantity}" if order_promo
         puts "order_promo_amount is #{order_promo_amount}" if order_promo
         ::TaxCloud::CartItem.new(
           index:    index,
