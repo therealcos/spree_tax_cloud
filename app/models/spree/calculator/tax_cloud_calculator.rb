@@ -42,6 +42,9 @@ module Spree
 
     def tax_for_item(item)
       order = item.order
+
+      return 0 unless order.line_items.map { |li| li.variant.product.taxable }.all?
+
       item_address = order.ship_address || order.bill_address
       # Only calculate tax when we have an address and it's in our jurisdiction
       return 0 unless item_address.present? && calculable.zone.include?(item_address)
