@@ -41,13 +41,13 @@ module Spree
     private
 
     def tax_for_item(item)
-      order = item.order
-
       if item.try(:variant)
         return 0 unless item.variant.product.taxable
       elsif item.try(:inventory_units)
         return 0 unless item.inventory_units.map { |iu| iu.variant.product.taxable }.all?
       end
+      
+      order = item.order
 
       item_address = order.ship_address || order.bill_address
       # Only calculate tax when we have an address and it's in our jurisdiction
