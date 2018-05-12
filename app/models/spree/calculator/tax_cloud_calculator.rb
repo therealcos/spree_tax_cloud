@@ -53,7 +53,7 @@ module Spree
         # TODO An ideal implementation will break the order down by Shipments / Packages
         # and use the actual StockLocation address for each separately, and create Adjustments
         # for the Shipments to reflect tax on shipping.
-        lookup_cart_items = item.variant.product.taxable ? Spree::TaxCloud.transaction_from_item(item).lookup.cart_items : []
+        lookup_cart_items = Spree::TaxCloud.transaction_from_item(item).lookup.cart_items
 
         # Now we will loop back through the items and assign them amounts from the lookup.
         # This inefficient method is due to the fact that item_id isn't preserved in the lookup.
@@ -63,10 +63,10 @@ module Spree
         index = -1 # array is zero-indexed
         # Retrieve line_items from lookup
         order.line_items.each do |line_item|
-          Rails.cache.write(["TaxCloudRatesForItem", line_item.tax_cloud_cache_key], item.variant.product.taxable ? lookup_cart_items[index += 1].tax_amount : 0, time_to_idle: 5.minutes)
+          Rails.cache.write(["TaxCloudRatesForItem", line_item.tax_cloud_cache_key], lookup_cart_items[index += 1].tax_amount, time_to_idle: 5.minutes)
         end
         order.shipments.each do |shipment|
-          Rails.cache.write(["TaxCloudRatesForItem", shipment.tax_cloud_cache_key], item.variant.product.taxable ? lookup_cart_items[index += 1].tax_amount : 0, time_to_idle: 5.minutes)
+          Rails.cache.write(["TaxCloudRatesForItem", shipment.tax_cloud_cache_key], lookup_cart_items[index += 1].tax_amount, time_to_idle: 5.minutes)
         end
 
         # Lastly, return the particular rate that we were initially looking for
