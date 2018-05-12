@@ -5,14 +5,7 @@ Spree::Order.class_eval do
     return unless is_taxed_using_tax_cloud?
 
     self.shipments.each do |shipment|
-      taxable = false
-      shipment.inventory_units.each do |unit|
-        if unit.variant.product.taxable
-          taxable = true
-          break
-        end
-      end
-      next unless taxable
+      next unless shipment.inventory_units.map { |iu| iu.variant.product.taxable }.all?
       
       response = Spree::TaxCloud.transaction_from_item(shipment).authorized_with_capture
       if response != "OK"
