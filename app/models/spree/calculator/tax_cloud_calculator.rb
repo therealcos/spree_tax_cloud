@@ -44,7 +44,7 @@ module Spree
       if item.try(:variant)
         return 0 unless item.variant.product.taxable
       elsif item.try(:inventory_units)
-        return 0 unless item.inventory_units.map { |iu| iu.variant.product.taxable }.all?
+        return 0 unless item.inventory_units.map { |iu| iu.variant.product.taxable }.any?
       end
       
       order = item.order
