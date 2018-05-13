@@ -3,16 +3,11 @@ Spree::Order.class_eval do
 
   def capture_tax_cloud
     return unless is_taxed_using_tax_cloud?
-
-    self.shipments.each do |shipment|
-      next unless shipment.inventory_units.map { |iu| iu.variant.product.taxable }.all?
-      
-      response = Spree::TaxCloud.transaction_from_item(shipment).authorized_with_capture
-      if response != "OK"
-        Rails.logger.error "ERROR: TaxCloud returned an order capture response of #{response}."
-      end
-      log_tax_cloud(response)
+    response =  Spree::TaxCloud.transaction_from_order(self).authorized_with_capture
+    if response != "OK"
+      Rails.logger.error "ERROR: TaxCloud returned an order capture response of #{response}."
     end
+    log_tax_cloud(response)
   end
 
   # TaxRate.match is used here to check if the order is taxable by Tax Cloud.
