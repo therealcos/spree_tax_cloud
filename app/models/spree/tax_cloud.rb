@@ -46,6 +46,9 @@ module Spree
     def self.cart_item_from_item(item, index)
       call_id = Array.new(36){[*"a".."z", *"A".."Z", *"0".."9"].sample}.join
 
+      puts "call_id is..."
+      puts call_id
+
       case item
       when Spree::LineItem
         order_promo = item.order.adjustments.competing_promos.eligible.reorder("amount ASC, created_at DESC, id DESC").first
@@ -57,6 +60,9 @@ module Spree
           price:    item.quantity == 0 ? item.price : (item.promo_total / item.quantity) + order_promo_amount + item.price,
           quantity: item.quantity
         )
+
+        puts "line item id is..."
+        puts "LineItem #{item.id} - #{call_id}"
       when Spree::Shipment
         ::TaxCloud::CartItem.new(
           index:    index,
@@ -65,6 +71,9 @@ module Spree
           price:    item.cost,
           quantity: 1
         )
+
+        puts "shipment id is..."
+        puts "Shipment #{item.number} - #{call_id}"
       else
         raise Spree.t(:cart_item_cannot_be_made)
       end
