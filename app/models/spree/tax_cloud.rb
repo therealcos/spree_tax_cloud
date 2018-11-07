@@ -52,7 +52,7 @@ module Spree
         order_promo_amount = order_promo ? (order_promo.amount / item.order.quantity) : 0
         ::TaxCloud::CartItem.new(
           index:    index,
-          item_id:  "LineItem #{item.id} - #{call_id}",
+          item_id:  "#{call_id}",
           tic:      (item.product.tax_cloud_tic || Spree::Config.taxcloud_default_product_tic),
           price:    item.quantity == 0 ? item.price : (item.promo_total / item.quantity) + order_promo_amount + item.price,
           quantity: item.quantity
@@ -60,7 +60,7 @@ module Spree
       when Spree::Shipment
         ::TaxCloud::CartItem.new(
           index:    index,
-          item_id:  "Shipment #{item.number} - #{call_id}",
+          item_id:  "#{call_id}",
           tic:      Spree::Config.taxcloud_shipping_tic,
           price:    item.cost,
           quantity: 1
